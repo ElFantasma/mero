@@ -101,19 +101,6 @@ madd(Name, KVEs, Timeout) ->
           Timeout,
           async_madd).
 
-get(Name, [Key], Timeout) ->
-    TimeLimit = mero_conf:add_now(Timeout),
-    case mero_cluster:server(Name, Key) of
-        {ok, PoolName} ->
-            case pool_execute(PoolName, get, [mero:storage_key(Key), TimeLimit], TimeLimit) of
-                {error, Reason} ->
-                    {error, [Reason], []};
-                Value ->
-                    [Value]
-            end;
-        {error, Error} ->
-            {error, [Error], []}
-    end;
 get(Name, Keys, Timeout) ->
     TimeLimit = mero_conf:add_now(Timeout),
     KeysGroupedByShards = mero_cluster:group_by_shards(Name, Keys),
